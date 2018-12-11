@@ -331,8 +331,8 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
             push!(lbounds, -Inf)
             push!(ubounds, Inf)
         end
-        iv0 = find(v .== 0.0)
-        iv = find(v .!= 0.0)
+        iv0 = findall(v .== 0.0)
+        iv = findall(v .!= 0.0)
     else
         iv0 = nothing
         iv = nothing
@@ -499,7 +499,7 @@ end
 function constrain_betas!(a, b, g, phiE, delta = 0.0)
   if a[end] == 0.0 # curve is flat on right
     minbc = minimum(phiE)
-    for i in find(g)
+    for i in findall(g)
       if minbc + b[i] > 1
         b[i] = 1 - minbc - delta
       end
@@ -507,7 +507,7 @@ function constrain_betas!(a, b, g, phiE, delta = 0.0)
   end
   if a[2] == 0.0 # curve is flat on left
     maxbc = maximum(phiE)
-    for i in find(g)
+    for i in findall(g)
       if maxbc + b[i] < 0
         b[i] = -maxbc + delta
       end
@@ -862,8 +862,9 @@ function cvpredict(data, fun, nfold; eachcondition = false, kwargs...)
 	if eachcondition
 	  nfold = ceil(Int64, mean(sum(x[:, g], 1)))
 	  p = zeros(Int64, size(x,1))
-	  for i in find(g)
-		xi = find(view(x, :, i))
+	  for i in findall(g)
+		#xi = find(view(x, :, i))
+    xi = findall(!iszero, view(x,:,i))
 		l = length(xi)
 		p[xi] = shuffle!(collect(1:l))
 	  end
