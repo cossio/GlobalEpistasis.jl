@@ -352,9 +352,9 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
         if haskey(mi, :knots)
             knots = mi[:knots]
         elseif knots == :linear
-            knots = linspace(0, 1, nk)
+            knots = range(0, stop=1, length=nk)
         elseif knots == :quantile
-            knots = unique(quantile(phi,  linspace(0, 1, nk)))
+            knots = unique(quantile(phi,  range(0, stop=1, length=nk)))
             if length(knots) < nk
                 warn("knots removed  from quantile redundancy")
             end
@@ -685,7 +685,7 @@ function boot_stats(m, mb)
   bnorm = mean(abs.(m[:b][g]))
   aboot = DataFrame(a = Float64[], i = Int64[])
   i = collect(1:length(m[:a]))
-	phi = [linspace(minimum(m[:phi]), 0, 101); 0:.01:1; linspace(1,maximum(m[:phi]), 101)]
+	phi = [range(minimum(m[:phi]), stop=0, length=101); 0:.01:1; range(1, stop=maximum(m[:phi]), length=101)]
     bootCI = DataFrame(phi = Float64[], yhat = Float64[], ddy = Float64[])
 	phi1 = hcat(ones(length(m[:phi])), m[:phi])
   for mm in mb
