@@ -392,7 +392,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
         a = nothing
     end
     if estimate_beta
-        brange = length(pi) + (1:nb)
+        brange = length(pi) .+ (1:nb)
         append!(pi, b)
         append!(lbounds, -Inf*ones(nb))
         append!(ubounds, Inf*ones(nb))
