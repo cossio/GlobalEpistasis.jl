@@ -346,7 +346,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
         # rescale phi to have range 0..1
         b = b/(maxphi-minphi)
         b[1] = b[1] - minphi/(maxphi-minphi)
-        phi = (phi-minphi)/(maxphi-minphi)
+        phi .= (phi .- minphi) ./ (maxphi .- minphi)
     end
     if estimate_alpha
         if haskey(mi, :knots)
