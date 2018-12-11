@@ -125,12 +125,12 @@ function monosplinebasis1(x, knots, k)
 
   Mall = zeros(length(x), na)
   Iall = zeros(length(x), na)
-  Iall[:,1] = 1.0
+  Iall[:,1] .= 1.0
   # monosplinebasis!(Mall, Iall, slope1, slope2, x, t, k)
   for (i,xi) in enumerate(x)
     monosplinebasis1!(M, I, slope1, slope2, xi, t, k)
-    Mall[i,:] = M
-    Iall[i,:] = I
+    Mall[i,:] .= M
+    Iall[i,:] .= I
   end
   return (Mall, Iall, t, slope1, slope2)
 end
