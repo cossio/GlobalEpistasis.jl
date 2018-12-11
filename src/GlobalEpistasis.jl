@@ -4,6 +4,7 @@ export prepdata, nonepistatic_model, fit, boot, boot_stats, predict, cvpredict, 
 
 using NLopt
 using DataFrames
+using SparseArrays
 
 function prepdata(df, seqname, kind, wt, yname; delim = '-', cname = nothing, vname = nothing, condition_type = :categorical)
     n = nrow(df)
@@ -21,7 +22,7 @@ function prepdata(df, seqname, kind, wt, yname; delim = '-', cname = nothing, vn
                     if !haskey(code, k)
                         code[k] = j
                         push!(aa, k[end])
-                        push!(pos, parse(k[2:end-1]))
+                        push!(pos, parse(Int, k[2:end-1]))
                         j += 1
                     end
                     push!(J, code[k])
@@ -52,8 +53,8 @@ function prepdata(df, seqname, kind, wt, yname; delim = '-', cname = nothing, vn
     x = sparse(I, J, 1.0)
     g = trues(size(x,2))
     g[1] = false
-    ham = ceil.(Int64, vec(sum(x,2))-1)
-	
+    ham = ceil.(Int64, vec(sum(x; dims=2)) .- 1)
+
     if any(ismissing.(df[yname]))
 		error("missing values in phenotype")
 	end
@@ -300,17 +301,17 @@ function monosplinebasis!(M, I, slope1, slope2, xv, t, kk)
   end
 end
 
-function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, :b); 
-        nk = 4, knots = :linear, 
-        a_upper_bound = get(mi, :a_upper_bound, [Inf, Inf]), 
+function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, :b);
+        nk = 4, knots = :linear,
+        a_upper_bound = get(mi, :a_upper_bound, [Inf, Inf]),
 		a_lower_bound = get(mi, :a_lower_bound, [0.0, 0.0]),
         maxit = 1000000, alg = :LD_LBFGS, tol=1e-14, constrainbeta = true)
 
-    
+
     data = mi[:data]
     x = data[:x]
     y = data[:y]
-    
+
     n, nb = size(x)
     pi = zeros(0)
     lbounds = zeros(0)
@@ -336,7 +337,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
         iv = nothing
 	    v = nothing
     end
-    
+
     phi = deepcopy(mi[:phi])
     b = deepcopy(mi[:b])
     if estimate_alpha && !estimate_beta
@@ -402,7 +403,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
     upper_bounds!(opt, ubounds)
     maxeval!(opt, maxit)
     ftol_rel!(opt, tol)
-    
+
     yhatp = ones(y)
     llmem = similar(y)
     gs2 = similar(y)
@@ -410,9 +411,9 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
     rsy = similar(y)
     rsvi = similar(y)
 
-    cb = (p, g) ->  spm_objective(p, g, x, y, v, 
+    cb = (p, g) ->  spm_objective(p, g, x, y, v,
             estimate_sigma2, estimate_sigma2p, estimate_alpha, estimate_beta,
-            arange, brange, M, I, t, slope1, slope2, 
+            arange, brange, M, I, t, slope1, slope2,
             phi, yhatp, llmem, gs2, gs2p, rsy, rsvi, iv0, iv)
     max_objective!(opt, cb)
 	(ll, p, ret) = optimize!(opt, pi)
@@ -426,7 +427,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
     #        pi[ai] = 0.01
     #        lower_bounds!(opt, lbounds)
     #        (ll, p, ret) = optimize!(opt, pi)
-    #        display("reoptimizing with lower a bound 0.0")            
+    #        display("reoptimizing with lower a bound 0.0")
     #        pi = p
     #        lbounds[ai] = 0.0
     #        lower_bounds!(opt, lbounds)
@@ -445,7 +446,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
 		#p[brange] = betabad
 	end
 
-    
+
     m = Dict(:data => data, :nlopt_return => ret, :ll => ll*n)
     if estimate_beta
         m[:b] = p[brange]
@@ -478,7 +479,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
 	m[:beta] = DataFrame(:pos => data[:pos], :aa => data[:aa])
 	m[:prediction] = DataFrame(:y => m[:data][:y], :yhat => m[:yhat])
 	beta = m[:b][g]
-    if estimate_alpha 
+    if estimate_alpha
 		m[:beta][:b] = beta/mean(abs.(beta))
 		m[:prediction][:phiG] = x[:, g] * m[:beta][:b]
 	else
@@ -516,10 +517,10 @@ end
 
 
 
-function spm_objective(p, g, x, y, v, 
+function spm_objective(p, g, x, y, v,
             estimate_sigma2, estimate_sigma2p, estimate_alpha, estimate_beta,
-            arange, brange, M, I, t, slope1, slope2, 
-            yhat, yhatp, ll::Vector{Float64}, gs2, gs2p, rsy, rsvi::Vector{Float64}, iv0, iv)  
+            arange, brange, M, I, t, slope1, slope2,
+            yhat, yhatp, ll::Vector{Float64}, gs2, gs2p, rsy, rsvi::Vector{Float64}, iv0, iv)
     if estimate_beta
         A_mul_B!(yhat, x, view(p, brange))
     end
@@ -540,7 +541,7 @@ function spm_objective(p, g, x, y, v,
         A_mul_B!(yhat, I, a)
         A_mul_B!(yhatp, M, a)
     end
-    
+
     n, nb = size(x)
 #     Threads.@threads for j = 1:n
     if estimate_sigma2
@@ -623,7 +624,7 @@ function boot(m; kwargs...)
         v .= sqrt.(v .+ m[:sigma2])
     else
         v = sqrt(m[:sigma2])
-    end    
+    end
     mboot[:data][:y] = randn(length(m[:yhat])).*v .+ m[:yhat]
     wt = m[:data][:ham] .== 0
     if all(m[:data][:y][wt] .== 0.0)
@@ -667,7 +668,7 @@ function boot(mi, i, search = false, tol=1e-4; kwargs...)
 			delete!(mb, :beta)
             push!(mdls, mb)
             display(length(mdls))
-        end            
+        end
     end
     display("total change in LL $(mi[:ll]-lli)")
     return mdls
@@ -697,8 +698,8 @@ function boot_stats(m, mb)
     ddy = (dy[2:end].-dy[1:end-1])/(phi[2]-phi[1])
     append!(bootCI, DataFrame(phi = phi[1:end-1], yhat = (sp[2]*mm[:a])[1:end-1], ddy = ddy))
   end
-  bbs = by(bboot, :name, d -> DataFrame(med = median(d[:b]), 
-										upper = quantile(d[:b], .975), 
+  bbs = by(bboot, :name, d -> DataFrame(med = median(d[:b]),
+										upper = quantile(d[:b], .975),
 										lower = quantile(d[:b], .025),
 										se = sqrt(var(d[:b])/length(d[:b]))))
   bbs = join(bbs, DataFrame(b = m[:beta][:b], name = names), on = :name)
@@ -718,12 +719,12 @@ function boot_stats(m, mb)
   ciw = mean(bbs[:upper].-bbs[:lower])
   display("beta average 95% CI width $ciw")
   display("beta average SE, $(sqrt(mean(bbs[:se].^2)))")
-  
-  aboot = by(aboot, :i, d -> DataFrame(med = median(d[:a]), upper = quantile(d[:a], .975), lower = quantile(d[:a], .025))) 
+
+  aboot = by(aboot, :i, d -> DataFrame(med = median(d[:a]), upper = quantile(d[:a], .975), lower = quantile(d[:a], .025)))
   aboot = join(aboot, DataFrame(a = m[:a]*bnorm, i = i), on = :i)
 	lower(x) = quantile(x, 0.025)
 	upper(x) = quantile(x, 0.975)
-	bootCI = by(bootCI, :phi, d -> DataFrame(yhat_upper = upper(d[:yhat]), yhat_lower = lower(d[:yhat]), 
+	bootCI = by(bootCI, :phi, d -> DataFrame(yhat_upper = upper(d[:yhat]), yhat_lower = lower(d[:yhat]),
 					ddy_upper = upper(d[:ddy]), ddy_lower = lower(d[:ddy])))
 #    bootCI = aggregate(bootCI, :phi, [lower, upper])
 	bootCI[:phiG] = (bootCI[:phi]-m[:b][1])/mean(abs.(m[:b][g]))
@@ -847,7 +848,7 @@ function predictx(m, x::SparseMatrixCSC{Float64,Int64})
     else
         return DataFrame(yhat = phi)
     end
-end	
+end
 
 function predict(m, seq, kind; wt = m[:data][:wt], delim = '-', pos = 1:length(seq[1]))
     x = designmatrix(m[:data], wt, seq, kind, delim, pos)
