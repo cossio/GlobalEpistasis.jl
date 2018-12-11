@@ -5,6 +5,7 @@ export prepdata, nonepistatic_model, fit, boot, boot_stats, predict, cvpredict, 
 using NLopt
 using DataFrames
 using SparseArrays
+using Statistics
 
 function prepdata(df, seqname, kind, wt, yname; delim = '-', cname = nothing, vname = nothing, condition_type = :categorical)
     n = nrow(df)
