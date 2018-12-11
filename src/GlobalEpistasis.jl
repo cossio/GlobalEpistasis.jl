@@ -405,7 +405,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
     maxeval!(opt, maxit)
     ftol_rel!(opt, tol)
 
-    yhatp = ones(y)
+    yhatp = ones(length(y))
     llmem = similar(y)
     gs2 = similar(y)
     gs2p = similar(y)
