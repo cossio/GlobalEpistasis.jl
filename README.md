@@ -16,7 +16,8 @@ dataf = CSV.read("test/wu4sites_test.txt")
 
 ## additional installation steps
 
-We need `RCall` to be able to run some of the Jupyter notebooks.
+We need `RCall.jl` to be able to run some of the Jupyter notebooks.
+Here is how to set it up.
 
 * Set `ENV["R_HOME"] = "*"`, then `add RCall` (RCall will install its own version of R). 
 * add `Conda`. Then `Conda.add("gxx_linux-64")`, to be able to build R dependencies.
