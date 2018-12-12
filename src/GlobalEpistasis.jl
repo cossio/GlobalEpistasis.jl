@@ -173,7 +173,7 @@ function monosplinebasis1!(M::Vector{Float64}, I::Vector{Float64}, slope1::Float
   elseif x >= t[end]
     # M[2:na] = 0.0
     M[na+1] = slope2
-    I[2:na] = 1.0
+    I[2:na] .= 1.0
     I[na+1] = 1.0 + slope2 * (x-t[end])
   else
     for i in 1:na
@@ -232,7 +232,7 @@ end
 function monosplinebasis!(M, I, slope1, slope2, xv, t, kk)
   # M spline
   na = size(M,2)-1
-  M[:,2:na+1] = 0.0
+  M[:,2:na+1] .= 0.0
   for (p, xp) in enumerate(xv)
 #     Threads.@threads for p = 1:length(xv)
 #     xp = xv[p]
@@ -240,12 +240,12 @@ function monosplinebasis!(M, I, slope1, slope2, xv, t, kk)
     if xp <= t[1]
       # M[3:end] = 0.0
       M[p,2] = slope1
-      I[p,3:end] = 0.0
+      I[p,3:end] .= 0.0
       I[p,2] = slope1 * (xp-t[1])
     elseif xp >= t[end]
       # M[2:na] = 0.0
       M[p,na+1] = slope2
-      I[p,2:na] = 1.0
+      I[p,2:na] .= 1.0
       I[p,na+1] = 1.0 + slope2 * (xp-t[end])
     else
       for i in 1:na
