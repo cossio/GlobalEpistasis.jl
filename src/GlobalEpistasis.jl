@@ -168,7 +168,7 @@ function monosplinebasis1!(M::Vector{Float64}, I::Vector{Float64}, slope1::Float
   if x <= t[1]
     # M[3:end] = 0.0
     M[2] = slope1
-    I[3:end] = 0.0
+    I[3:end] .= 0.0
     I[2] = slope1 * (x-t[1])
   elseif x >= t[end]
     # M[2:na] = 0.0
