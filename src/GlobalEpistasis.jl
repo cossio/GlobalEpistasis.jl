@@ -629,7 +629,7 @@ function boot(m; kwargs...)
     mboot[:data][:y] = randn(length(m[:yhat])).*v .+ m[:yhat]
     wt = m[:data][:ham] .== 0
     if all(m[:data][:y][wt] .== 0.0)
-        mboot[:data][:y][wt] = 0.0
+        mboot[:data][:y][wt] .= 0.0
     end
     spmopt(mboot; kwargs...)
 end
@@ -642,7 +642,7 @@ function boot(mi, i, search = false, tol=1e-4; kwargs...)
         mb[:data] = mi[:data]
         if search
             m = spmopt(mb; kwargs...)
-            dll = m[:ll]-mi[:ll]
+            dll = m[:ll] - mi[:ll]
             if dll > tol
                 mi = m
                 mdls = []
