@@ -362,7 +362,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
         M, I, t, slope1, slope2 = monosplinebasis1(phi, knots, 3)
         na = size(I,2)
         a = zeros(na)
-        arange = length(pi) + (1:na)
+        arange = length(pi) .+ (1:na)
         if haskey(mi, :a)
             #push!(pi, mi[:a][1])
             #append!(pi, log.(mi[:a][2:end]))
