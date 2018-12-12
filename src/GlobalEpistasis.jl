@@ -163,7 +163,7 @@ end
 function monosplinebasis1!(M::Vector{Float64}, I::Vector{Float64}, slope1::Float64, slope2::Float64, x::Float64, t::Vector{Float64}, kk::Int64)
   # M spline
   na = length(M) - 1
-  M[2:na+1] = 0.0
+  M[2:na+1] .= 0.0
   # extend basis to extrapolate linearly beyond knots
   if x <= t[1]
     # M[3:end] = 0.0
