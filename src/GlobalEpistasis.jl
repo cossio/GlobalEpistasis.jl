@@ -8,6 +8,7 @@ using SparseArrays
 using Statistics
 using Random
 using LinearAlgebra
+using KahanSummation
 
 
 function prepdata(df, seqname, kind, wt, yname; delim = '-', cname = nothing, vname = nothing, condition_type = :categorical)
