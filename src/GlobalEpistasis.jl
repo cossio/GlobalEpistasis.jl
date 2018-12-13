@@ -694,10 +694,10 @@ function boot_stats(m, mb)
 	append!(aboot, DataFrame(a = mm[:a]*bnorm, i = i))
 	append!(bboot, DataFrame(b = mm[:b][g]/c[2]/bnorm, name = names))
 
-	sp = monosplinebasis1(phi*c[2]+c[1], m[:knots], 3)
+	sp = monosplinebasis1(phi .* c[2] .+ c[1], m[:knots], 3)
 	dy = sp[1]*mm[:a]
-    ddy = (dy[2:end].-dy[1:end-1])/(phi[2]-phi[1])
-    append!(bootCI, DataFrame(phi = phi[1:end-1], yhat = (sp[2]*mm[:a])[1:end-1], ddy = ddy))
+    ddy = (dy[2:end] .- dy[1:end-1]) ./ (phi[2] - phi[1])
+    append!(bootCI, DataFrame(phi = phi[1:end-1], yhat = (sp[2] .* mm[:a])[1:end-1], ddy = ddy))
   end
   bbs = by(bboot, :name, d -> DataFrame(med = median(d[:b]),
 										upper = quantile(d[:b], .975),
