@@ -526,13 +526,10 @@ function spm_objective(p, g, x, y, v,
             estimate_sigma2, estimate_sigma2p, estimate_alpha, estimate_beta,
             arange, brange, M, I, t, slope1, slope2,
             yhat, yhatp, ll::Vector{Float64}, gs2, gs2p, rsy, rsvi::Vector{Float64}, iv0, iv)
-    println("here")
     if estimate_beta
-      println(@__LINE__)
       mul!(yhat, x, view(p, brange))
     end
     if estimate_alpha
-        println(@__LINE__)
         #a .= exp.(view(p, arange))
         #a[1] = p[arange[1]]
         #for i = 2:length(a)
@@ -548,13 +545,11 @@ function spm_objective(p, g, x, y, v,
         end
         mul!(yhat, I, a)
         mul!(yhatp, M, a)
-        println(@__LINE__)
     end
 
     n, nb = size(x)
 #     Threads.@threads for j = 1:n
     if estimate_sigma2
-      println(@__LINE__)
       s = exp(p[1])
       for j in iv
         r = y[j]-yhat[j]
@@ -564,7 +559,6 @@ function spm_objective(p, g, x, y, v,
         gs2[j] = (rsvi[j]*r-1)*svi*s/2
         ll[j] = -rsvi[j]*r-log(s+v[j])
       end
-      println(@__LINE__)
       if estimate_sigma2p
           s2 = exp(p[2])
           svi2 = 1/(s+s2)
@@ -579,20 +573,15 @@ function spm_objective(p, g, x, y, v,
           end
           g[2] = sum_kbn(gs2p)
       end
-      println(@__LINE__)
       g[1] = sum_kbn(gs2)
-      println(@__LINE__)
     else
         for j = 1:n
             r = y[j]-yhat[j]
             rsvi[j] = r
             ll[j] = -r^2
         end
-        println(@__LINE__)
     end
-    println(@__LINE__)
     sll = sum_kbn(ll)/2/n
-    println(@__LINE__)
    # display(any(isnan.(yhat)))
 #     if isnan(sll)
 #     #    display("$s $s2")
@@ -604,21 +593,16 @@ function spm_objective(p, g, x, y, v,
 #         error("nan ll")
 #     end
     if estimate_beta
-      println(@__LINE__)
       rsy .= rsvi .* yhatp
       mul!(view(g, brange), transpose(x), rsy)
-      println(@__LINE__)
     end
     if estimate_alpha
-      println(@__LINE__)
       mul!(view(g, arange), transpose(I), rsvi)
       #for i = 2:length(a)
       #    g[arange[i]] = g[arange[i]]*a[i]
       #end
-      println(@__LINE__)
     end
     g .= g ./ n
-    println(@__LINE__)
 	return sll
 end
 
