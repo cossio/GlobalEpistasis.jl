@@ -730,9 +730,9 @@ function boot_stats(m, mb)
 #    bootCI = aggregate(bootCI, :phi, [lower, upper])
 	bootCI[:phiG] = (bootCI[:phi] .- m[:b][1]) ./ mean(abs.(m[:b][g]))
 	#display(bootCI)
-	ciw = mean(bootCI[:yhat_upper].-bootCI[:yhat_lower])
+	ciw = mean(bootCI[:yhat_upper] .- bootCI[:yhat_lower])
 	display("g(phi) average CI $ciw")
-	g2k = ([0,1]-m[:b][1])/mean(abs.(m[:b][g]))
+	g2k = ([0,1] .- m[:b][1]) ./ mean(abs.(m[:b][g]))
 	display("g(phi) boundary $g2k")
 	if any(bootCI[:ddy_lower] .> 0.0)
 		g2p = extrema(bootCI[:phiG][bootCI[:ddy_lower] .> 0.0])
@@ -752,7 +752,7 @@ function boot_stats(m, mb)
 		c = m[:b][.!g]
 		gboot1 = deepcopy(bootCI)
 		for i in 2:length(lc)
-			gboot1[:phiG] = (gboot1[:phi]-c[1]-c[i])/bnorm
+			gboot1[:phiG] = (gboot1[:phi] - c[1] - c[i])/bnorm
 			gboot1[:c] = lc[i]
 			append!(bootCI, gboot1)
 		end
