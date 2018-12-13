@@ -20,7 +20,7 @@ We need `RCall.jl` to be able to run some of the Jupyter notebooks.
 Here is how to set it up.
 
 * Set `ENV["R_HOME"] = "*"`, then `add RCall` (RCall will install its own version of R). 
-* add `Conda`. Then `Conda.add("gxx_linux-64")`, to be able to build R dependencies.
+* add `Conda`. Then `using Conda; Conda.add("gxx_linux-64")`, to be able to build R dependencies.
 * Add `$JULIA_DEPOT_PATH/conda/3/bin` to the environment `PATH` variable.
 * `using RCall; R"""install.packages(c("tidyverse", "cowplot", "stringr"), repos="https://cloud.r-project.org")"""`
 
