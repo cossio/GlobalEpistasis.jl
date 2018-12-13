@@ -526,7 +526,7 @@ function spm_objective(p, g, x, y, v,
             arange, brange, M, I, t, slope1, slope2,
             yhat, yhatp, ll::Vector{Float64}, gs2, gs2p, rsy, rsvi::Vector{Float64}, iv0, iv)
     if estimate_beta
-        A_mul_B!(yhat, x, view(p, brange))
+        mul!(yhat, x, view(p, brange))
     end
     if estimate_alpha
         #a .= exp.(view(p, arange))
@@ -542,8 +542,8 @@ function spm_objective(p, g, x, y, v,
         if estimate_beta
             monosplinebasis!(M, I, slope1, slope2, yhat, t, 3)
         end
-        A_mul_B!(yhat, I, a)
-        A_mul_B!(yhatp, M, a)
+        mul!(yhat, I, a)
+        mul!(yhatp, M, a)
     end
 
     n, nb = size(x)
@@ -593,10 +593,10 @@ function spm_objective(p, g, x, y, v,
 #     end
     if estimate_beta
         rsy .= rsvi.*yhatp
-        At_mul_B!(view(g, brange), x, rsy)
+        mul!(view(g, brange), transpose(x_, rsy)
     end
     if estimate_alpha
-        At_mul_B!(view(g, arange), I, rsvi)
+        mul!(view(g, arange), transpose(I), rsvi)
         #for i = 2:length(a)
         #    g[arange[i]] = g[arange[i]]*a[i]
         #end
