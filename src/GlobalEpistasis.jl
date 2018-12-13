@@ -728,7 +728,7 @@ function boot_stats(m, mb)
 	bootCI = by(bootCI, :phi, d -> DataFrame(yhat_upper = upper(d[:yhat]), yhat_lower = lower(d[:yhat]),
 					ddy_upper = upper(d[:ddy]), ddy_lower = lower(d[:ddy])))
 #    bootCI = aggregate(bootCI, :phi, [lower, upper])
-	bootCI[:phiG] = (bootCI[:phi]-m[:b][1])/mean(abs.(m[:b][g]))
+	bootCI[:phiG] = (bootCI[:phi] .- m[:b][1]) ./ mean(abs.(m[:b][g]))
 	#display(bootCI)
 	ciw = mean(bootCI[:yhat_upper].-bootCI[:yhat_lower])
 	display("g(phi) average CI $ciw")
