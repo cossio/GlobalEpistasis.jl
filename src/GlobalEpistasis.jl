@@ -841,7 +841,7 @@ end
 
 function predictx(m, x::SparseMatrixCSC{Float64,Int64})
     g = m[:data][:g]
-    phi = x*m[:b]
+    phi = x * m[:b]
     if haskey(m, :a)
         yhat = monosplinebasis1(phi, m[:knots], 3)[2]*m[:a]
 	    phiG = x[:, g] * m[:beta][:b]
@@ -870,7 +870,7 @@ function cvpredict(data, fun, nfold; eachcondition = false, kwargs...)
 	  end
 	else
 		n = length(data[:y])
-		p = ceil.(Int, collect(1:n)/n*nfold)
+		p = ceil.(Int, collect(1:n) ./ n*nfold)
 		shuffle!(p)
 	end
     yhat = zeros(data[:y])
