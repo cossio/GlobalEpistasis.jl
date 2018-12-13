@@ -308,7 +308,7 @@ end
 function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, :b);
         nk = 4, knots = :linear,
         a_upper_bound = get(mi, :a_upper_bound, [Inf, Inf]),
-		a_lower_bound = get(mi, :a_lower_bound, [0.0, 0.0]),
+		    a_lower_bound = get(mi, :a_lower_bound, [0.0, 0.0]),
         maxit = 1000000, alg = :LD_LBFGS, tol=1e-14, constrainbeta = true)
 
 
@@ -419,36 +419,36 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
             estimate_sigma2, estimate_sigma2p, estimate_alpha, estimate_beta,
             arange, brange, M, I, t, slope1, slope2,
             phi, yhatp, llmem, gs2, gs2p, rsy, rsvi, iv0, iv)
-  max_objective!(opt, cb)
-	(ll, p, ret) = optimize!(opt, pi)
-    #if estimate_alpha && estimate_beta
-    #    a = p[arange]
-    #    if a[2] < 0.01 || a[end] < 0.01
-    #        display("reoptimizing with lower a bound 0.01")
-    #        pi = p
-    #        ai = [arange[2], arange[end]]
-    #        lbounds[ai] = 0.01
-    #        pi[ai] = 0.01
-    #        lower_bounds!(opt, lbounds)
-    #        (ll, p, ret) = optimize!(opt, pi)
-    #        display("reoptimizing with lower a bound 0.0")
-    #        pi = p
-    #        lbounds[ai] = 0.0
-    #        lower_bounds!(opt, lbounds)
-    #        (ll, p, ret) = optimize!(opt, pi)
-    #    end
-    #end
+    max_objective!(opt, cb)
+  	(ll, p, ret) = optimize!(opt, pi)
+      #if estimate_alpha && estimate_beta
+      #    a = p[arange]
+      #    if a[2] < 0.01 || a[end] < 0.01
+      #        display("reoptimizing with lower a bound 0.01")
+      #        pi = p
+      #        ai = [arange[2], arange[end]]
+      #        lbounds[ai] = 0.01
+      #        pi[ai] = 0.01
+      #        lower_bounds!(opt, lbounds)
+      #        (ll, p, ret) = optimize!(opt, pi)
+      #        display("reoptimizing with lower a bound 0.0")
+      #        pi = p
+      #        lbounds[ai] = 0.0
+      #        lower_bounds!(opt, lbounds)
+      #        (ll, p, ret) = optimize!(opt, pi)
+      #    end
+      #end
     g = data[:g]
-	if constrainbeta && estimate_beta && estimate_alpha && all(data[:ham] .<= 1) && haskey(data, :c) # single mutants multi conditions
-		betabad = p[brange]
-		phiE = x[:, .!g] * betabad[.!g]
-	    constrain_betas!(p[arange], betabad, g, phiE, 0.1)
-		p[brange] = betabad
-		display("constraining betas")
-    	#(ll, p, ret) = optimize!(opt, p)
-		#constrain_betas!(p[arange], betabad, g, phiE, 0.1)
-		#p[brange] = betabad
-	end
+  	if constrainbeta && estimate_beta && estimate_alpha && all(data[:ham] .<= 1) && haskey(data, :c) # single mutants multi conditions
+  		betabad = p[brange]
+  		phiE = x[:, .!g] * betabad[.!g]
+  	    constrain_betas!(p[arange], betabad, g, phiE, 0.1)
+  		p[brange] = betabad
+  		display("constraining betas")
+      #(ll, p, ret) = optimize!(opt, p)
+  		#constrain_betas!(p[arange], betabad, g, phiE, 0.1)
+  		#p[brange] = betabad
+  	end
 
 
     m = Dict(:data => data, :nlopt_return => ret, :ll => ll*n)
@@ -470,7 +470,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
     end
 
     m[:r2] = cor(y, m[:yhat])^2
-	m[:rmse] = sqrt(mean((m[:yhat]-data[:y]).^2))
+	  m[:rmse] = sqrt(mean((m[:yhat]-data[:y]).^2))
     if estimate_sigma2
         m[:sigma2] = exp(p[1])
         if estimate_sigma2p
@@ -614,7 +614,7 @@ function fit(m0::Dict; kwargs...)
 	if !haskey(m0, :a)
 	    m0 = spmopt(m0, true, false; kwargs...)
 	end
-    spmopt(m0, true, true; kwargs...)
+  spmopt(m0, true, true; kwargs...)
 end
 
 function boot(m; kwargs...)
