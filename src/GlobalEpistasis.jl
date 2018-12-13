@@ -699,10 +699,10 @@ function boot_stats(m, mb)
     ddy = (dy[2:end] .- dy[1:end-1]) ./ (phi[2] - phi[1])
     append!(bootCI, DataFrame(phi = phi[1:end-1], yhat = (sp[2] * mm[:a])[1:end-1], ddy = ddy))
   end
-  bbs = by(bboot, :name, d -> DataFrame(med = median(d[:b]),
-										upper = quantile(d[:b], .975),
-										lower = quantile(d[:b], .025),
-										se = sqrt(var(d[:b]) / length(d[:b]))))
+  bbs = by(bboot, :name, d -> DataFrame(med = median(d[:, :b]),
+										upper = quantile(d[:, :b], .975),
+										lower = quantile(d[:, :b], .025),
+										se = sqrt(var(d[:, :b]) / length(d[:, :b]))))
   bbs = join(bbs, DataFrame(b = m[:beta][:b], name = names), on = :name)
   ben = bbs[:lower] .> 0
   del = bbs[:upper] .< 0
@@ -721,12 +721,12 @@ function boot_stats(m, mb)
   display("beta average 95% CI width $ciw")
   display("beta average SE, $(sqrt(mean(bbs[:se].^2)))")
 
-  aboot = by(aboot, :i, d -> DataFrame(med = median(d[:a]), upper = quantile(d[:a], .975), lower = quantile(d[:a], .025)))
+  aboot = by(aboot, :i, d -> DataFrame(med = median(d[:, :a]), upper = quantile(d[:, :a], .975), lower = quantile(d[:, :a], .025)))
   aboot = join(aboot, DataFrame(a = m[:a]*bnorm, i = i), on = :i)
 	lower(x) = quantile(x, 0.025)
 	upper(x) = quantile(x, 0.975)
-	bootCI = by(bootCI, :phi, d -> DataFrame(yhat_upper = upper(d[:yhat]), yhat_lower = lower(d[:yhat]),
-					ddy_upper = upper(d[:ddy]), ddy_lower = lower(d[:ddy])))
+	bootCI = by(bootCI, :phi, d -> DataFrame(yhat_upper = upper(d[:, :yhat]), yhat_lower = lower(d[:, :yhat]),
+					ddy_upper = upper(d[:, :ddy]), ddy_lower = lower(d[:, :ddy])))
 #    bootCI = aggregate(bootCI, :phi, [lower, upper])
 	bootCI[:phiG] = (bootCI[:phi] .- m[:b][1]) ./ mean(abs.(m[:b][g]))
 	#display(bootCI)
