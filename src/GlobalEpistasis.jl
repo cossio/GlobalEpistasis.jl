@@ -7,6 +7,7 @@ using DataFrames
 using SparseArrays
 using Statistics
 using Random
+using LinearAlgebra
 
 
 function prepdata(df, seqname, kind, wt, yname; delim = '-', cname = nothing, vname = nothing, condition_type = :categorical)
@@ -418,7 +419,7 @@ function spmopt(mi, estimate_alpha = haskey(mi, :a), estimate_beta = haskey(mi, 
             estimate_sigma2, estimate_sigma2p, estimate_alpha, estimate_beta,
             arange, brange, M, I, t, slope1, slope2,
             phi, yhatp, llmem, gs2, gs2p, rsy, rsvi, iv0, iv)
-    max_objective!(opt, cb)
+  max_objective!(opt, cb)
 	(ll, p, ret) = optimize!(opt, pi)
     #if estimate_alpha && estimate_beta
     #    a = p[arange]
