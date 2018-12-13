@@ -689,7 +689,7 @@ function boot_stats(m, mb)
     bootCI = DataFrame(phi = Float64[], yhat = Float64[], ddy = Float64[])
 	phi1 = hcat(ones(length(m[:phi])), m[:phi])
   for mm in mb
-	c = phi1\(data[:x] * mm[:b])
+	c = phi1 \ (data[:x] .* mm[:b])
 
 	append!(aboot, DataFrame(a = mm[:a]*bnorm, i = i))
 	append!(bboot, DataFrame(b = mm[:b][g]/c[2]/bnorm, name = names))
