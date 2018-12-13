@@ -525,6 +525,7 @@ function spm_objective(p, g, x, y, v,
             estimate_sigma2, estimate_sigma2p, estimate_alpha, estimate_beta,
             arange, brange, M, I, t, slope1, slope2,
             yhat, yhatp, ll::Vector{Float64}, gs2, gs2p, rsy, rsvi::Vector{Float64}, iv0, iv)
+    println("here")
     if estimate_beta
         mul!(yhat, x, view(p, brange))
     end
@@ -592,7 +593,7 @@ function spm_objective(p, g, x, y, v,
 #         error("nan ll")
 #     end
     if estimate_beta
-        rsy .= rsvi.*yhatp
+        rsy .= rsvi .* yhatp
         mul!(view(g, brange), transpose(x), rsy)
     end
     if estimate_alpha
