@@ -580,6 +580,7 @@ function spm_objective(p, g, x, y, v,
       end
       println(@__LINE__)
       g[1] = sum_kbn(gs2)
+      println(@__LINE__)
     else
         for j = 1:n
             r = y[j]-yhat[j]
@@ -588,6 +589,7 @@ function spm_objective(p, g, x, y, v,
         end
         println(@__LINE__)
     end
+    println(@__LINE__)
     sll = sum_kbn(ll)/2/n
     println(@__LINE__)
    # display(any(isnan.(yhat)))
