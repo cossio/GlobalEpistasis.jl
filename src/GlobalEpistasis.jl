@@ -593,7 +593,7 @@ function spm_objective(p, g, x, y, v,
 #     end
     if estimate_beta
         rsy .= rsvi.*yhatp
-        mul!(view(g, brange), transpose(x_, rsy)
+        mul!(view(g, brange), transpose(x), rsy)
     end
     if estimate_alpha
         mul!(view(g, arange), transpose(I), rsvi)
