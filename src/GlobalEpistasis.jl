@@ -702,15 +702,15 @@ function boot_stats(m, mb)
   bbs = by(bboot, :name, d -> DataFrame(med = median(d[:b]),
 										upper = quantile(d[:b], .975),
 										lower = quantile(d[:b], .025),
-										se = sqrt(var(d[:b])/length(d[:b]))))
+										se = sqrt(var(d[:b]) / length(d[:b]))))
   bbs = join(bbs, DataFrame(b = m[:beta][:b], name = names), on = :name)
   ben = bbs[:lower] .> 0
   del = bbs[:upper] .< 0
   neut = .!ben .& .!del
   bbs[:effect] = ["" for i = 1:nrow(bbs)]
-  bbs[:effect][ben] = "beneficial"
-  bbs[:effect][del] = "deleterious"
-  bbs[:effect][neut] = "neutral"
+  bbs[:effect][ben] .= "beneficial"
+  bbs[:effect][del] .= "deleterious"
+  bbs[:effect][neut] .= "neutral"
   bbs[:pos] = data[:pos]
   bbs[:aa] = data[:aa]
   bben = sum(bbs[:lower].>0)
