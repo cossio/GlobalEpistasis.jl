@@ -875,7 +875,7 @@ function cvpredict(data, fun, nfold; eachcondition = false, kwargs...)
 		p = ceil.(Int, collect(1:n) ./ n*nfold)
 		shuffle!(p)
 	end
-    yhat = zeros(data[:y])
+    yhat = zeros(length(data[:y]))
 	function pred1(i)
 		display(i)
 		data1 = copy(data)
