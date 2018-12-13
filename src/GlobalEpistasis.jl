@@ -601,7 +601,7 @@ function spm_objective(p, g, x, y, v,
         #    g[arange[i]] = g[arange[i]]*a[i]
         #end
     end
-    g .= g/n
+    g .= g ./ n
 	return sll
 
 end
